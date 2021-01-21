@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:padding="10dp"
+    android:background="#222222">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="인게임 닉네임"
+            android:textColor="#aaaaaa"
+            android:textSize="15sp"
+            android:layout_marginBottom="5dp"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edtName"
+            android:textColor="#f0f0f0"
+            android:textSize="15sp"
+            android:hint="유플레이 닉네임"
+            android:textColorHint="#666666"
+            android:layout_marginBottom="10dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="레이드 종류"
+            android:textColor="#aaaaaa"
+            android:textSize="15sp"
+            android:layout_marginBottom="5dp"/>
+        <RadioGroup
+            android:id="@+id/rgType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp">
+            <RadioButton
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:id="@+id/rdoIronHorse"
+                android:text="철마"
+                android:textColor="#f0f0f0"
+                android:textSize="17sp"
+                android:textAlignment="center"
+                android:background="@drawable/radiocustom"
+                android:checked="true"
+                android:button="null"
+                android:layout_marginRight="5dp"/>
+            <RadioButton
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:id="@+id/rdoDark"
+                android:text="칠흑의 시간"
+                android:textColor="#f0f0f0"
+                android:textSize="17sp"
+                android:textAlignment="center"
+                android:background="@drawable/radiocustom"
+                android:checked="false"
+                android:button="null"
+                android:layout_marginRight="5dp"/>
+        </RadioGroup>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="네임드 역할"
+            android:textColor="#aaaaaa"
+            android:textSize="15sp"
+            android:layout_marginBottom="5dp"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:id="@+id/btnNamed1"
+            android:background="@drawable/buttoncustom"
+            android:text="[Named1 Type]"
+            android:textColor="#aaaaaa"
+            android:layout_marginBottom="5dp"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:id="@+id/btnNamed2"
+            android:background="@drawable/buttoncustom"
+            android:text="[Named2 Type]"
+            android:textColor="#aaaaaa"
+            android:layout_marginBottom="5dp"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:id="@+id/btnNamed3"
+            android:background="@drawable/buttoncustom"
+            android:text="[Named3 Type]"
+            android:textColor="#aaaaaa"
+            android:layout_marginBottom="5dp"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:id="@+id/btnNamed4"
+            android:background="@drawable/buttoncustom"
+            android:text="[Named4 Type]"
+            android:textColor="#aaaaaa"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btnRemove"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="45dp"
+            android:background="@drawable/subbuttonhub"
+            android:layout_gravity="center"
+            android:text="제거"
+            android:textSize="18sp"
+            android:layout_marginRight="5dp"
+            android:textColor="#aaaaaa"/>
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="45dp"
+            android:background="@drawable/mainbuttonhub"
+            android:layout_gravity="center"
+            android:text="추가"
+            android:textSize="18sp"
+            android:layout_marginLeft="5dp"
+            android:textColor="#FFBD8D"/>
+    </LinearLayout>
+</LinearLayout>

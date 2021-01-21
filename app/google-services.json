@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "789640590351",
+    "firebase_url": "https://vip-agents-raid-system-default-rtdb.firebaseio.com",
+    "project_id": "vip-agents-raid-system",
+    "storage_bucket": "vip-agents-raid-system.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:789640590351:android:90a8e2da36b4aae4a79f7a",
+        "android_client_info": {
+          "package_name": "com.vip.raid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "789640590351-s4nfqc0vmvklk44cabablq605geq2m1n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vip.raid",
+            "certificate_hash": "effe9197a7f311d5bce7773026e4aebaa9dd5ecb"
+          }
+        },
+        {
+          "client_id": "789640590351-7roqjqh69etv04nel2dc035pt9eeu7fk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMts2a8EIXuc-fOQkursrFa42Azhawf1M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "789640590351-7roqjqh69etv04nel2dc035pt9eeu7fk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
