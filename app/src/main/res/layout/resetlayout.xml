@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:background="@drawable/layoutcustom">
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:id="@+id/edtPassword"
+        android:hint="비밀번호"
+        android:textAlignment="center"
+        android:textColor="#f0f0f0"
+        android:textColorHint="#999999"
+        android:inputType="numberPassword"
+        android:textSize="15sp"/>
+    <Button
+        android:id="@+id/btnProcess"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:background="@drawable/mainbuttonhub"
+        android:layout_gravity="center"
+        android:text="초기화"
+        android:textSize="18sp"
+        android:textColor="#FFBD8D"/>
+</LinearLayout>

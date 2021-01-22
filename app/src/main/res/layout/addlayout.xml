@@ -48,7 +48,7 @@
                 android:textAlignment="center"
                 android:background="@drawable/radiocustom"
                 android:checked="true"
-                android:button="null"
+                android:button="@null"
                 android:layout_marginRight="5dp"/>
             <RadioButton
                 android:layout_width="0dp"
@@ -61,7 +61,7 @@
                 android:textAlignment="center"
                 android:background="@drawable/radiocustom"
                 android:checked="false"
-                android:button="null"
+                android:button="@null"
                 android:layout_marginRight="5dp"/>
         </RadioGroup>
         <TextView
@@ -76,7 +76,7 @@
             android:layout_height="35dp"
             android:id="@+id/btnNamed1"
             android:background="@drawable/buttoncustom"
-            android:text="[Named1 Type]"
+            android:text="없음"
             android:textColor="#aaaaaa"
             android:layout_marginBottom="5dp"/>
         <Button
@@ -84,7 +84,7 @@
             android:layout_height="35dp"
             android:id="@+id/btnNamed2"
             android:background="@drawable/buttoncustom"
-            android:text="[Named2 Type]"
+            android:text="없음"
             android:textColor="#aaaaaa"
             android:layout_marginBottom="5dp"/>
         <Button
@@ -92,7 +92,7 @@
             android:layout_height="35dp"
             android:id="@+id/btnNamed3"
             android:background="@drawable/buttoncustom"
-            android:text="[Named3 Type]"
+            android:text="없음"
             android:textColor="#aaaaaa"
             android:layout_marginBottom="5dp"/>
         <Button
@@ -100,7 +100,7 @@
             android:layout_height="35dp"
             android:id="@+id/btnNamed4"
             android:background="@drawable/buttoncustom"
-            android:text="[Named4 Type]"
+            android:text="없음"
             android:textColor="#aaaaaa"/>
     </LinearLayout>
     <LinearLayout
