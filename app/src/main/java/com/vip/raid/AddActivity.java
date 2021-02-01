@@ -1,9 +1,13 @@
 package com.vip.raid;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,6 +34,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,10 +49,10 @@ public class AddActivity extends AppCompatActivity {
     private RadioGroup rgType;
     private RadioButton rdoIronHorse, rdoDark;
     private Button[] btnNamed = new Button[4];
-    private Button btnAdd, btnRemove;
+    private Button btnAdd, btnRemove, btnSave, btnInput;
 
     private String[][] ironHorseTypes = {{"전방", "후방", "달콤한꿈+전방", "힐러"}, {"지휘통제실", "내부탱커", "A구역", "B구역", "C구역", "2층 딜러", "힐러"},
-            {"3층 진단", "2층, 3층", "1층 초기화", "탱커", "힐러", "CC빌드(상태이상)", "경첩", "ABC", "저격수 처리", "경첩 파괴"}, {"모로조바탱", "키탱", "좌측 힐러", "우측 힐러", "좌측 전방 딜러", "우측 전방 딜러", "좌측 RPG 후방", "우측 RPG 후방"}};
+            {"3층 진단", "2층, 3층 + 경첩", "1층 초기화", "탱커", "힐러", "CC빌드(상태이상)", "ABC", "저격수 처리", "경첩 파괴", "잡몹 처리"}, {"모로조바탱", "키탱", "좌측 힐러", "우측 힐러", "좌측 전방 딜러", "우측 전방 딜러", "좌측 RPG 후방", "우측 RPG 후방", "잡몹 처리"}};
     private String[][] darkTypes = {{"A", "B", "C", "D", "힐러", "드리블러", "기관포", "외부 딜러"}, {"A", "B"}, {"루시", "버디"}, {"1번 내부 (생존 전문가)", "1번 외부", "2번 내부 (생존 전문가)", "2번 외부", "3번 내부", "3번 외부", "4번 내부", "4번 외부"}};
 
     private FirebaseDatabase mDatabase;
@@ -70,6 +79,8 @@ public class AddActivity extends AppCompatActivity {
         rdoDark = findViewById(R.id.rdoDark);
         btnAdd = findViewById(R.id.btnAdd);
         btnRemove = findViewById(R.id.btnRemove);
+        btnSave = findViewById(R.id.btnSave);
+        btnInput = findViewById(R.id.btnInput);
 
         for (int i = 0; i < btnNamed.length; i++) {
             int resources = getResources().getIdentifier("btnNamed"+(i+1), "id", getPackageName());
@@ -193,6 +204,10 @@ public class AddActivity extends AppCompatActivity {
             btnAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (edtName.getText().toString().equals("")) {
+                        Toast.makeText(AddActivity.this, "닉네임이 비어있습니다.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     boolean isHave = false;
                     for (int i = 0; i < ironHorseNames.size(); i++) {
                         if (rdoIronHorse.isChecked()) {
@@ -261,7 +276,162 @@ public class AddActivity extends AppCompatActivity {
             });
         }
 
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!edtName.getText().toString().equals("")) {
+                    saveName(edtName.getText().toString());
+                    toast("아이디를 저장하였습니다.", false);
+                } else toast("아이디를 입력하십시오.", false);
+            }
+        });
+
+        btnInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!loadName().equals("/*null*/")) {
+                    edtName.setText(loadName());
+                    toast("아이디를 불러왔습니다.", false);
+                } else toast("저장된 아이디가 없습니다.", false);
+            }
+        });
+
     }
+
+    /*private void saveLoadoutData() {
+        if (hasPermissions()) {
+            String databaseName = loadoutDBAdapter.getDatabaseName();
+            String backupDirectoryName = "Division2Databases";
+            try {
+                File sd = Environment.getExternalStorageDirectory();
+                File data = Environment.getDataDirectory();
+                if (sd.canWrite()) {
+                    File backupDir = new File(sd, backupDirectoryName);
+                    if (!backupDir.exists()) backupDir.mkdir();
+                    String currentDBPath = "//data//" + getPackageName()+ "//databases//" + databaseName;
+                    String backupDBPath = "loadout_savefile";
+                    File currentDB = new File(data, currentDBPath);
+                    File backupDB = new File(sd, backupDirectoryName+"/"+backupDBPath);
+
+                    FileChannel src = new FileInputStream(currentDB).getChannel();
+                    FileChannel dst = new FileOutputStream(backupDB).getChannel();
+
+                    dst.transferFrom(src, 0, src.size());
+                    src.close();
+                    dst.close();
+                } else {
+                    toast("권한 오류", false);
+                }
+            } catch (Exception e) {
+                toast("Import Failed!!", false);
+                e.printStackTrace();
+            }
+        } else {
+            requestPerms();
+        }
+    }
+
+    private void loadLoadout() {
+        if (hasPermissions()) {
+            String databaseName = loadoutDBAdapter.getDatabaseName();
+            String backupDirectoryName = "Division2Databases";
+            try {
+                File sd = Environment.getExternalStorageDirectory();
+                File data = Environment.getDataDirectory();
+                if (sd.canWrite()) {
+                    String currentDBPath = "//data//" + getPackageName()+ "//databases//" + databaseName;
+                    String backupDBPath = "loadout_savefile";
+                    File backupDB = new File(data, currentDBPath);
+                    File currentDB = new File(sd, backupDirectoryName+"/"+backupDBPath);
+
+                    FileChannel src = new FileInputStream(currentDB).getChannel();
+                    FileChannel dst = new FileOutputStream(backupDB).getChannel();
+
+                    dst.transferFrom(src, 0, src.size());
+                    src.close();
+                    dst.close();
+
+                } else {
+                    toast("권한 오류", false);
+                }
+            } catch (Exception e) {
+                toast("저장된 파일이 없습니다.", false);
+                e.printStackTrace();
+            }
+        } else {
+            requestPerms();
+        }
+    }*/
+
+    public void saveName(String name) {
+        FileOutputStream fos = null;
+        try {
+            fos = openFileOutput("nickname.txt", MODE_PRIVATE);
+            fos.write(name.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            toast(String.valueOf(e), false);
+        } finally {
+            try {
+                if (fos != null) fos.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public String loadName() {
+        FileInputStream fis = null;
+
+        try {
+            fis = openFileInput("nickname.txt");
+            byte[] memoData = new byte[fis.available()];
+
+            while(fis.read(memoData) != -1) {}
+            return new String(memoData);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fis != null) fis.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return "/*null*/";
+    }
+
+    private void toast(String message, boolean longer) {
+        int length;
+        if (longer) length = Toast.LENGTH_LONG;
+        else length = Toast.LENGTH_SHORT;
+        Toast.makeText(getApplicationContext(), message, length).show();
+    }
+
+    /*private boolean hasPermissions() {
+        int res = 0;
+        String[] permissions = new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+
+        for (String perms : permissions) {
+            res = checkCallingOrSelfPermission(perms);
+            if (!(res == PackageManager.PERMISSION_GRANTED)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void requestPerms() {
+        String[] permissions = new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(permissions, 0);
+        }
+    }*/
 
     private void checkFull(String type) {
         btnAdd.setEnabled(false);
