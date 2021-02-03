@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RadioGroup rgType;
     private RadioButton rdoIronHorse, rdoDark;
-    private TextView txtTime;
+    private TextView txtTime, txtPeople;
     private LinearLayout[] layoutNamed = new LinearLayout[4];
     private TextView[] txtNamed = new TextView[4];
     private Button btnReset, btnAdd;
@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
     private AlertDialog.Builder builder = null;
     private View view;
 
+    private int people = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         txtTime = findViewById(R.id.txtTime);
         btnReset = findViewById(R.id.btnReset);
         btnAdd = findViewById(R.id.btnAdd);
+        txtPeople = findViewById(R.id.txtPeople);
 
         for (int i = 0; i < layoutNamed.length; i++) {
             int resources = getResources().getIdentifier("layoutNamed"+(i+1), "id", getPackageName());
@@ -131,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.rdoIronHorse) {
+                    checkPeople("IronHorse");
                     for (int i = 0; i < 4; i++) {
                         layoutNamed[i].removeAllViews();
                         /*TextView txtName = new TextView(getApplicationContext());
@@ -190,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 } else {
+                    checkPeople("Dark");
                     for (int i = 0; i < 4; i++) {
                         layoutNamed[i].removeAllViews();
                         /*TextView txtName = new TextView(getApplicationContext());
@@ -304,6 +309,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (rdoIronHorse.isChecked()) {
+            checkPeople("IronHorse");
             for (int i = 0; i < 4; i++) {
                 layoutNamed[i].removeAllViews();
                         /*TextView txtName = new TextView(getApplicationContext());
@@ -363,6 +369,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         } else {
+            checkPeople("Dark");
             for (int i = 0; i < 4; i++) {
                 layoutNamed[i].removeAllViews();
                         /*TextView txtName = new TextView(getApplicationContext());
@@ -421,6 +428,33 @@ public class MainActivity extends AppCompatActivity {
                     layoutNamed[i].addView(view);
                 }
             }
+        }
+    }
+
+    private void checkPeople(String type) {
+        for (int index = 0; index < 8; index++) {
+            mReference = mDatabase.getReference(type+"/Member"+(index+1));
+            final int position_index = index;
+            people = 0;
+            txtPeople.setText(Integer.toString(people));
+            mReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot messageData : snapshot.getChildren()) {
+                        if (messageData.getKey().toString().equals("name") && !messageData.getValue().toString().equals("none")) {
+                            people++;
+                            txtPeople.setText(Integer.toString(people));
+                            break;
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
         }
     }
 }

@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="[Type] : "
-        android:textSize="12sp"
+        android:textSize="15sp"
         android:textColor="#aaaaaa"/>
     <TextView
         android:id="@+id/txtContent"
@@ -17,7 +17,7 @@
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:text="없음"
-        android:textSize="12sp"
+        android:textSize="15sp"
         android:textColor="#f0f0f0"/>
 
 </LinearLayout>

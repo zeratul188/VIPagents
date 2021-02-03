@@ -60,7 +60,7 @@ public class AddActivity extends AppCompatActivity {
 
     private ArrayList<String> ironHorseNames, darkNames;
 
-    private boolean isIronHorse = true;
+    private boolean isIronHorse = true, isFull = true;
     private int position = 0;
 
     private AlertDialog alertDialog = null;
@@ -99,11 +99,11 @@ public class AddActivity extends AppCompatActivity {
                     btnNamed[i].setText("없음");
                 }
                 if (checkedId == R.id.rdoIronHorse) {
-                    isIronHorse = true;
                     checkFull("IronHorse");
+                    isIronHorse = true;
                 } else {
-                    isIronHorse = false;
                     checkFull("Dark");
+                    isIronHorse = false;
                 }
             }
         });
@@ -233,9 +233,20 @@ public class AddActivity extends AppCompatActivity {
                         }
                     }
                     if (!isHave) {
+                        if (isIronHorse) {
+                            if (isFull) {
+                                toast("참가 인원 수가 초과되었습니다.", false);
+                                return;
+                            }
+                            mReference = mDatabase.getReference("IronHorse/Member"+position);
+                        } else {
+                            if (isFull) {
+                                toast("참가 인원 수가 초과되었습니다.", false);
+                                return;
+                            }
+                            mReference = mDatabase.getReference("Dark/Member"+position);
+                        }
                         Map<String, Object> taskMap = new HashMap<String, Object>();
-                        if (isIronHorse) mReference = mDatabase.getReference("IronHorse/Member"+position);
-                        else mReference = mDatabase.getReference("Dark/Member"+position);
                         taskMap.put("name", edtName.getText().toString());
                         for (int i = 0; i < btnNamed.length; i++) taskMap.put("Named"+(i+1), btnNamed[i].getText().toString());
                         mReference.updateChildren(taskMap);
@@ -434,16 +445,16 @@ public class AddActivity extends AppCompatActivity {
     }*/
 
     private void checkFull(String type) {
-        btnAdd.setEnabled(false);
+        isFull = true;
         for (int index = 0; index < 8; index++) {
             mReference = mDatabase.getReference(type+"/Member"+(index+1));
             final int position_index = index;
-            mReference.addValueEventListener(new ValueEventListener() {
+            mReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     for (DataSnapshot messageData : snapshot.getChildren()) {
                         if (messageData.getKey().toString().equals("name") && messageData.getValue().toString().equals("none")) {
-                            btnAdd.setEnabled(true);
+                            isFull = false;
                             position = position_index + 1;
                             break;
                         }
