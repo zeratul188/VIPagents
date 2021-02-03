@@ -1,6 +1,7 @@
 package com.vip.raid;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -8,10 +9,18 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -23,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < 4; i++) {
             txtNamed[i].setText("네임드 "+(i+1)+" - "+ironHorseBoss[i]);
             for (int j = 0; j < ironHorseTypes[i].length; j++) {
-                View view = getLayoutInflater().inflate(R.layout.insertlayout, null);
+                final View view = getLayoutInflater().inflate(R.layout.insertlayout, null);
                 LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 param.bottomMargin = 5;
                 view.setLayoutParams(param);
@@ -111,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                             if (isFind) {
-                                if (txtContent.getText().toString().equals("없음")) {
+                                if (txtContent.getText().toString().equals("-")) {
                                     txtContent.setText(name);
                                 } else {
                                     txtContent.setText(txtContent.getText().toString()+"\n"+name);
@@ -147,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                         txtNamed[i].setText("네임드 "+(i+1)+" - "+ironHorseBoss[i]);
 
                         for (int j = 0; j < ironHorseTypes[i].length; j++) {
-                            View view = getLayoutInflater().inflate(R.layout.insertlayout, null);
+                            final View view = getLayoutInflater().inflate(R.layout.insertlayout, null);
                             LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                             param.bottomMargin = 5;
                             view.setLayoutParams(param);
@@ -175,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                         }
                                         if (isFind) {
-                                            if (txtContent.getText().toString().equals("없음")) {
+                                            if (txtContent.getText().toString().equals("-")) {
                                                 txtContent.setText(name);
                                             } else {
                                                 txtContent.setText(txtContent.getText().toString()+"\n"+name);
@@ -207,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
                         txtNamed[i].setText("네임드 "+(i+1)+" - "+darkBoss[i]);
 
                         for (int j = 0; j < darkTypes[i].length; j++) {
-                            View view = getLayoutInflater().inflate(R.layout.insertlayout, null);
+                            final View view = getLayoutInflater().inflate(R.layout.insertlayout, null);
                             LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                             param.bottomMargin = 5;
                             view.setLayoutParams(param);
@@ -235,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                         }
                                         if (isFind) {
-                                            if (txtContent.getText().toString().equals("없음")) {
+                                            if (txtContent.getText().toString().equals("-")) {
                                                 txtContent.setText(name);
                                             } else {
                                                 txtContent.setText(txtContent.getText().toString()+"\n"+name);
@@ -322,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
                 txtNamed[i].setText("네임드 "+(i+1)+" - "+ironHorseBoss[i]);
 
                 for (int j = 0; j < ironHorseTypes[i].length; j++) {
-                    View view = getLayoutInflater().inflate(R.layout.insertlayout, null);
+                    final View view = getLayoutInflater().inflate(R.layout.insertlayout, null);
                     LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                     param.bottomMargin = 5;
                     view.setLayoutParams(param);
@@ -350,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                                 if (isFind) {
-                                    if (txtContent.getText().toString().equals("없음")) {
+                                    if (txtContent.getText().toString().equals("-")) {
                                         txtContent.setText(name);
                                     } else {
                                         txtContent.setText(txtContent.getText().toString()+"\n"+name);
@@ -382,7 +392,7 @@ public class MainActivity extends AppCompatActivity {
                 txtNamed[i].setText("네임드 "+(i+1)+" - "+darkBoss[i]);
 
                 for (int j = 0; j < darkTypes[i].length; j++) {
-                    View view = getLayoutInflater().inflate(R.layout.insertlayout, null);
+                    final View view = getLayoutInflater().inflate(R.layout.insertlayout, null);
                     LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                     param.bottomMargin = 5;
                     view.setLayoutParams(param);
@@ -410,7 +420,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                                 if (isFind) {
-                                    if (txtContent.getText().toString().equals("없음")) {
+                                    if (txtContent.getText().toString().equals("-")) {
                                         txtContent.setText(name);
                                     } else {
                                         txtContent.setText(txtContent.getText().toString()+"\n"+name);
@@ -428,6 +438,80 @@ public class MainActivity extends AppCompatActivity {
                     layoutNamed[i].addView(view);
                 }
             }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_btn1:
+                view = getLayoutInflater().inflate(R.layout.memberlayout, null);
+                final ListView listView = view.findViewById(R.id.listView);
+                final TextView txtInfo = view.findViewById(R.id.txtInfo);
+
+                final ArrayList<String> list = new ArrayList<String>();
+                String type = "";
+                if (rdoIronHorse.isChecked()) type = "IronHorse";
+                else type = "Dark";
+                for (int index = 0; index < 8; index++) {
+                    mReference = mDatabase.getReference(type+"/Member"+(index+1));
+                    mReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for (DataSnapshot messageData : snapshot.getChildren()) {
+                                if (messageData.getKey().toString().equals("name") && !messageData.getValue().toString().equals("none")) {
+                                    list.add(messageData.getValue().toString());
+                                    if (!list.isEmpty()) {
+                                        txtInfo.setVisibility(View.GONE);
+                                        listView.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+
+                ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, list) {
+                    @NonNull
+                    @Override
+                    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                        View view = super.getView(position, convertView, parent);
+
+                        TextView tv = (TextView) view.findViewById(android.R.id.text1);
+
+                        tv.setTextColor(Color.WHITE);
+                        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
+                                LinearLayout.LayoutParams.FILL_PARENT ); //텍스트 뷰의 크기를 부모의 크기에 맞춘후
+                        tv.setLayoutParams(layoutParams);
+                        tv.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL);
+
+                        return view;
+                    }
+                };
+                listView.setAdapter(adapter);
+
+                builder = new AlertDialog.Builder(this);
+                builder.setView(view);
+
+                alertDialog =builder.create();
+                alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                alertDialog.show();
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

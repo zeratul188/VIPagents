@@ -50,10 +50,17 @@ public class AddActivity extends AppCompatActivity {
     private RadioButton rdoIronHorse, rdoDark;
     private Button[] btnNamed = new Button[4];
     private Button btnAdd, btnRemove, btnSave, btnInput;
+    private TextView[] txtNamed = new TextView[4];
 
     private String[][] ironHorseTypes = {{"전방", "후방", "달콤한꿈+전방", "힐러"}, {"지휘통제실", "내부탱커", "A구역", "B구역", "C구역", "2층 딜러", "힐러"},
             {"3층 진단", "2층, 3층 + 경첩", "1층 초기화", "탱커", "힐러", "CC빌드(상태이상)", "ABC", "저격수 처리", "경첩 파괴", "잡몹 처리"}, {"모로조바탱", "키탱", "좌측 힐러", "우측 힐러", "좌측 전방 딜러", "우측 전방 딜러", "좌측 RPG 후방", "우측 RPG 후방", "잡몹 처리"}};
     private String[][] darkTypes = {{"A", "B", "C", "D", "힐러", "드리블러", "기관포", "외부 딜러"}, {"A", "B"}, {"루시", "버디"}, {"1번 내부 (생존 전문가)", "1번 외부", "2번 내부 (생존 전문가)", "2번 외부", "3번 내부", "3번 외부", "4번 내부", "4번 외부"}};
+
+    private int[][] ironHorseMax = {{8, 1, 3, 1}, {1, 1, 2, 2, 2, 1, 1}, {1, 1, 1, 1, 1, 1, 1, 8, 2, 8}, {1, 1, 1, 1, 1, 1, 1, 1, 8}};
+    private int[][] darkMax = {{1, 1, 1, 1, 1, 2, 2, 8}, {8, 8}, {8, 8}, {1, 1, 1, 1, 1, 1, 1, 1}};
+
+    private String[] darkBoss = {"부머", "디지/리코챗 + 위젤", "루시 & 버디", "DDP-52 레이저백"};
+    private String[] ironHorseBoss = {"그레이", "피서", "윌리엄스", "모로조바"};
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mReference;
@@ -61,7 +68,7 @@ public class AddActivity extends AppCompatActivity {
     private ArrayList<String> ironHorseNames, darkNames;
 
     private boolean isIronHorse = true, isFull = true;
-    private int position = 0;
+    private int position = 0, max = 8, cnt = 0;
 
     private AlertDialog alertDialog = null;
     private AlertDialog.Builder builder = null;
@@ -72,6 +79,7 @@ public class AddActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.addlayout);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle("역할 추가/수정");
 
         edtName = findViewById(R.id.edtName);
         rgType = findViewById(R.id.rgType);
@@ -85,6 +93,8 @@ public class AddActivity extends AppCompatActivity {
         for (int i = 0; i < btnNamed.length; i++) {
             int resources = getResources().getIdentifier("btnNamed"+(i+1), "id", getPackageName());
             btnNamed[i] = findViewById(resources);
+            resources = getResources().getIdentifier("txtNamed"+(i+1), "id", getPackageName());
+            txtNamed[i] = findViewById(resources);
         }
 
         ironHorseNames = new ArrayList<String>();
@@ -101,12 +111,22 @@ public class AddActivity extends AppCompatActivity {
                 if (checkedId == R.id.rdoIronHorse) {
                     checkFull("IronHorse");
                     isIronHorse = true;
+                    for (int i = 0; i < txtNamed.length; i++) {
+                        txtNamed[i].setText("네임드"+(i+1)+" - "+ironHorseBoss[i]);
+                    }
                 } else {
                     checkFull("Dark");
                     isIronHorse = false;
+                    for (int i = 0; i < txtNamed.length; i++) {
+                        txtNamed[i].setText("네임드"+(i+1)+" - "+darkBoss[i]);
+                    }
                 }
             }
         });
+
+        for (int i = 0; i < txtNamed.length; i++) {
+            txtNamed[i].setText(txtNamed[i].getText().toString()+ironHorseBoss[i]);
+        }
 
         for (int i = 0; i < btnNamed.length; i++) {
             final int index_i = i;
@@ -128,15 +148,87 @@ public class AddActivity extends AppCompatActivity {
                     }
                     list.add("없음");
 
+                    final Map<String, Integer> taskMap = new HashMap<String, Integer>();
+                    for (int i = 0; i < list.size(); i++) {
+                        taskMap.put(list.get(i), 0);
+                    }
+
                     ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, list) {
                         @NonNull
                         @Override
                         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
                             View view = super.getView(position, convertView, parent);
 
-                            TextView tv = (TextView) view.findViewById(android.R.id.text1);
-
+                            final TextView tv = (TextView) view.findViewById(android.R.id.text1);
                             tv.setTextColor(Color.WHITE);
+
+                            final int final_position = position;
+                            if (isIronHorse) {
+                                for (int index = 0; index < 8; index++) {
+                                    mReference = mDatabase.getReference("IronHorse/Member"+(index+1));
+                                    mReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            String str = list.get(final_position);
+                                            for (int i = 0; i < ironHorseTypes[index_i].length; i++) {
+                                                if (str.equals(ironHorseTypes[index_i][i])) {
+                                                    max = ironHorseMax[index_i][i];
+                                                    break;
+                                                } else max = 8;
+                                            }
+                                            for (DataSnapshot messageData : snapshot.getChildren()) {
+                                                if (messageData.getKey().toString().equals("Named"+(index_i+1)) && messageData.getValue().toString().equals(str)) {
+                                                    taskMap.put(str, taskMap.get(str)+1);
+                                                    if (taskMap.get(str)/8 >= max) {
+                                                        tv.setVisibility(View.GONE);
+                                                    }
+                                                    tv.setText(str+" ("+(taskMap.get(str)/8)+")");
+                                                    break;
+                                                }
+                                                if (!str.equals("없음")) tv.setText(str+" ("+(taskMap.get(str)/8)+")");
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                                }
+                            } else {
+                                for (int index = 0; index < 8; index++) {
+                                    mReference = mDatabase.getReference("Dark/Member"+(index+1));
+                                    mReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            String str = list.get(final_position);
+                                            for (int i = 0; i < darkTypes[index_i].length; i++) {
+                                                if (str.equals(darkTypes[index_i][i])) {
+                                                    max = darkMax[index_i][i];
+                                                    break;
+                                                } else max = 8;
+                                            }
+                                            for (DataSnapshot messageData : snapshot.getChildren()) {
+                                                if (messageData.getKey().toString().equals("Named"+(index_i+1)) && messageData.getValue().toString().equals(str)) {
+                                                    taskMap.put(str, taskMap.get(str)+1);
+                                                    if (taskMap.get(str)/8 >= max) {
+                                                        tv.setVisibility(View.GONE);
+                                                    }
+                                                    tv.setText(str+" ("+(taskMap.get(str)/8)+")");
+                                                    break;
+                                                }
+                                                if (!str.equals("없음")) tv.setText(str+" ("+(taskMap.get(str)/8)+")");
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                                }
+                            }
+
                             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
                                     LinearLayout.LayoutParams.FILL_PARENT ); //텍스트 뷰의 크기를 부모의 크기에 맞춘후
                             tv.setLayoutParams(layoutParams);

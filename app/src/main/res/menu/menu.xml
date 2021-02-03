@@ -1,0 +1,19 @@
+<menu  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_btn1"
+        android:title=""
+        android:icon="@drawable/ic_person_black_24dp"
+        app:showAsAction="always" />
+    <item android:id="@+id/action_btn2"
+        android:title="철마 기믹 설명 (제작 중...)"
+        app:showAsAction="never" />
+    <item android:id="@+id/action_btn3"
+        android:text="action_btn3"
+        android:title="칠흑의 시간 기믹 설명 (제작 중...)"
+        app:showAsAction="collapseActionView" />
+    <!--<item android:id="@+id/action_btn5"
+        android:title="버튼5"
+        app:showAsAction="withText"/>-->
+
+</menu>

@@ -1,18 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:background="@drawable/layoutcustom">
-    <EditText
+    android:layout_height="match_parent" >
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:id="@+id/edtPassword"
-        android:hint="비밀번호"
-        android:textAlignment="center"
-        android:textColor="#f0f0f0"
-        android:textColorHint="#999999"
-        android:inputType="numberPassword"
-        android:textSize="15sp"/>
+        android:background="@drawable/layoutcustom"
+        android:layout_marginBottom="15dp"
+        android:orientation="vertical">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:id="@+id/edtPassword"
+            android:hint="비밀번호"
+            android:textAlignment="center"
+            android:textColor="#f0f0f0"
+            android:textColorHint="#999999"
+            android:inputType="numberPassword"
+            android:textSize="15sp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="초기화는 공대장 혹은 관리자가 하는 것을 권장합니다."
+            android:textSize="15sp"
+            android:layout_marginBottom="10dp"
+            android:textColor="#FF4444"/>
+    </LinearLayout>
     <Button
         android:id="@+id/btnProcess"
         android:layout_width="200dp"
