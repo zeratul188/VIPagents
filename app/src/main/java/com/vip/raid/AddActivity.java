@@ -1,14 +1,11 @@
 package com.vip.raid;
 
-import android.Manifest;
 import android.app.AlertDialog;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,11 +31,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -569,7 +564,52 @@ public class AddActivity extends AppCompatActivity {
                 finish();
                 return true;
             }
+            case R.id.action_btn1:
+                for (int index = 0; index < 8; index++) {
+                    mReference = mDatabase.getReference("IronHorse/Member"+(index+1));
+                    mReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String[] named = new String[4];
+                            for (DataSnapshot messageData : snapshot.getChildren()) {
+                                switch (messageData.getKey().toString()) {
+                                    case "Named1":
+                                        named[0] = messageData.getValue().toString();
+                                        break;
+                                    case "Named2":
+                                        named[1] = messageData.getValue().toString();
+                                        break;
+                                    case "Named3":
+                                        named[2] = messageData.getValue().toString();
+                                        break;
+                                    case "Named4":
+                                        named[3] = messageData.getValue().toString();
+                                        break;
+                                    case "name":
+                                        if (edtName.getText().toString().equals(messageData.getValue().toString())) {
+                                            for (int i = 0; i < named.length; i++) {
+                                                btnNamed[i].setText(named[i]);
+                                            }
+                                            toast("역할을 불러왔습니다.", false);
+                                        }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.add_menu, menu);
+        return true;
     }
 }
