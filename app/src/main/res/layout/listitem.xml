@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="#292929"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/layoutcustom"
+        android:padding="10dp"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtName"
+                android:text="[클랜원 이름]"
+                android:textSize="25sp"
+                android:textColor="#f0f0f0"/>
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/imgGrade"
+                android:src="@drawable/difficulty4"/>
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="가입 날짜"
+            android:textSize="12sp"
+            android:textColor="#aaaaaa"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="[가입 날짜]"
+            android:textSize="15sp"
+            android:id="@+id/txtDate"
+            android:layout_marginBottom="10dp"
+            android:textColor="#f0f0f0"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/layoutUnconnect">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="미접속 사유 시작 시간"
+                android:textColor="#aaaaaa"
+                android:textSize="12sp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="[미접속 사유 시작 날짜]"
+                android:textSize="15sp"
+                android:id="@+id/txtStartDate"
+                android:layout_marginBottom="10dp"
+                android:textColor="#f0f0f0"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="미접속 사유 기간"
+                android:textColor="#aaaaaa"
+                android:textSize="12sp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="[미접속 사유 기간]"
+                android:textSize="15sp"
+                android:id="@+id/txtLength"
+                android:layout_marginBottom="10dp"
+                android:textColor="#f0f0f0"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/layoutManagement"
+            android:visibility="gone"
+            android:orientation="horizontal">
+            <Button
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:drawableTop="@drawable/ic_edit_black_24dp"
+                android:text="수정"
+                android:id="@+id/btnEdit"
+                android:drawablePadding="5dp"
+                android:textSize="17sp"
+                android:textColor="#f0f0f0"/>
+            <Button
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:drawableTop="@drawable/ic_delete_black_24dp"
+                android:text="삭제"
+                android:id="@+id/btnDelete"
+                android:drawablePadding="5dp"
+                android:textSize="17sp"
+                android:textColor="#f0f0f0"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

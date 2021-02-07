@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RadioGroup rgType;
     private RadioButton rdoIronHorse, rdoDark;
-    private TextView txtTime, txtPeople;
+    private TextView txtTime, txtPeople, txtCommander;
     private LinearLayout[] layoutNamed = new LinearLayout[4];
     private TextView[] txtNamed = new TextView[4];
     private Button btnReset, btnAdd;
@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private View view;
 
     private int people = 0;
+    private boolean isNull = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         btnReset = findViewById(R.id.btnReset);
         btnAdd = findViewById(R.id.btnAdd);
         txtPeople = findViewById(R.id.txtPeople);
+        txtCommander = findViewById(R.id.txtCommander);
 
         for (int i = 0; i < layoutNamed.length; i++) {
             int resources = getResources().getIdentifier("layoutNamed"+(i+1), "id", getPackageName());
@@ -88,6 +90,26 @@ public class MainActivity extends AppCompatActivity {
 
         txtTime.setText(year+"년 "+month+"월 "+day+"일");
         mDatabase = FirebaseDatabase.getInstance();
+
+        for (int index = 0; index < 8; index++) {
+            mReference = mDatabase.getReference("IronHorse/Member"+(index+1));
+            mReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    boolean isFind = false;
+                    for (DataSnapshot messageData : snapshot.getChildren()) {
+                        if (messageData.getKey().toString().equals("Commander") && messageData.getValue().toString().equals("true")) isFind = true;
+                        else if (isFind && messageData.getKey().toString().equals("name")) txtCommander.setText(messageData.getValue().toString());
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+        }
 
         for (int i = 0; i < 4; i++) {
             txtNamed[i].setText("네임드 "+(i+1)+" - "+ironHorseBoss[i]);
@@ -263,13 +285,33 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
+                for (int index = 0; index < 8; index++) {
+                    if (checkedId == R.id.rdoIronHorse) mReference = mDatabase.getReference("IronHorse/Member"+(index+1));
+                    else mReference = mDatabase.getReference("Dark/Member"+(index+1));
+                    mReference.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            boolean isFind = false;
+                            for (DataSnapshot messageData : snapshot.getChildren()) {
+                                if (messageData.getKey().toString().equals("Commander") && messageData.getValue().toString().equals("true")) isFind = true;
+                                else if (isFind && messageData.getKey().toString().equals("name")) txtCommander.setText(messageData.getValue().toString());
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
+                }
             }
         });
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent =new Intent(getApplicationContext(), AddActivity.class);
+                Intent intent = new Intent(getApplicationContext(), AddActivity.class);
                 startActivity(intent);
             }
         });
@@ -317,6 +359,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        isNull = true;
+        for (int index = 0; index < 8; index++) {
+            if (rdoIronHorse.isChecked()) mReference = mDatabase.getReference("IronHorse/Member"+(index+1));
+            else mReference = mDatabase.getReference("Dark/Member"+(index+1));
+            mReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    boolean isFind = false;
+                    for (DataSnapshot messageData : snapshot.getChildren()) {
+                        if (messageData.getKey().toString().equals("Commander") && messageData.getValue().toString().equals("true")) {
+                            isFind = true;
+                            isNull = false;
+                        } else if (isFind && messageData.getKey().toString().equals("name")) txtCommander.setText(messageData.getValue().toString());
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+        }
+        if (isNull) txtCommander.setText("없음");
         if (rdoIronHorse.isChecked()) {
             checkPeople("IronHorse");
             for (int i = 0; i < 4; i++) {
@@ -485,10 +551,30 @@ public class MainActivity extends AppCompatActivity {
                 ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, list) {
                     @NonNull
                     @Override
-                    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
                         View view = super.getView(position, convertView, parent);
 
-                        TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                        final TextView tv = (TextView) view.findViewById(android.R.id.text1);
+
+                        for (int index = 0; index < 8; index++) {
+                            if (rdoIronHorse.isChecked()) mReference = mDatabase.getReference("IronHorse/Member"+(index+1));
+                            else mReference = mDatabase.getReference("Dark/Member"+(index+1));
+                            mReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    boolean isCommander = false;
+                                    for (DataSnapshot messageData : snapshot.getChildren()) {
+                                        if (messageData.getKey().toString().equals("Commander") && messageData.getValue().toString().equals("true")) isCommander = true;
+                                        else if (messageData.getKey().toString().equals("name") && messageData.getValue().toString().equals(list.get(position)) && isCommander) tv.setTextColor(Color.parseColor("#FF5555"));
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+                        }
 
                         tv.setTextColor(Color.WHITE);
                         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
@@ -508,6 +594,10 @@ public class MainActivity extends AppCompatActivity {
                 alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 alertDialog.show();
 
+                return true;
+            case R.id.action_btn4:
+                Intent intent = new Intent(getApplicationContext(), MembersActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

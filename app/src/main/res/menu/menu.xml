@@ -5,6 +5,10 @@
         android:title=""
         android:icon="@drawable/ic_person_black_24dp"
         app:showAsAction="always" />
+    <item android:id="@+id/action_btn4"
+        android:title=""
+        android:icon="@drawable/ic_people_black_24dp"
+        app:showAsAction="always" />
     <item android:id="@+id/action_btn2"
         android:title="철마 기믹 설명 (제작 중...)"
         app:showAsAction="never" />

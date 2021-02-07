@@ -19,37 +19,39 @@
                 android:textColor="#aaaaaa"
                 android:textSize="15sp"
                 android:layout_marginBottom="5dp"/>
-            <LinearLayout
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <EditText
+                android:id="@+id/edtName"
+                android:textColor="#f0f0f0"
+                android:textSize="15sp"
+                android:hint="유플레이 닉네임"
+                android:textColorHint="#666666"
+                android:layout_marginBottom="5dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp">
+                <Button
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:id="@+id/edtName"
-                    android:textColor="#f0f0f0"
-                    android:textSize="15sp"
-                    android:hint="유플레이 닉네임"
-                    android:textColorHint="#666666"
-                    android:layout_marginBottom="10dp"/>
-                <Button
-                    android:layout_width="60dp"
-                    android:layout_height="30dp"
                     android:background="@drawable/buttoncustom"
-                    android:text="저장"
+                    android:text="아이디 저장"
                     android:id="@+id/btnSave"
                     android:textSize="15sp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginRight="5dp"
                     android:textColor="#aaaaaa"/>
                 <Button
-                    android:layout_width="80dp"
-                    android:layout_height="30dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/buttoncustom"
                     android:text="불러오기"
                     android:id="@+id/btnInput"
                     android:textSize="15sp"
+                    android:layout_marginLeft="5dp"
                     android:textColor="#aaaaaa"/>
             </LinearLayout>
             <TextView
@@ -92,13 +94,27 @@
                     android:button="@null"
                     android:layout_marginRight="5dp"/>
             </RadioGroup>
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="네임드 역할"
-                android:textColor="#aaaaaa"
-                android:textSize="15sp"
-                android:layout_marginBottom="5dp"/>
+                android:orientation="horizontal"
+                android:layout_marginBottom="5dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="네임드 역할"
+                    android:textColor="#aaaaaa"
+                    android:textSize="15sp"/>
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="공대장"
+                    android:id="@+id/chkCommander"
+                    android:buttonTint="#fe6e0e"
+                    android:textColor="#f0f0f0"
+                    android:textSize="15sp"/>
+            </LinearLayout>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -219,7 +235,7 @@
             android:layout_height="45dp"
             android:background="@drawable/mainbuttonhub"
             android:layout_gravity="center"
-            android:text="추가 / 변경"
+            android:text="저장 / 변경"
             android:textSize="18sp"
             android:layout_marginLeft="5dp"
             android:textColor="#FFBD8D"/>

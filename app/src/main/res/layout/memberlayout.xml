@@ -30,5 +30,12 @@
             android:visibility="gone"
             android:id="@+id/listView"/>
     </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="공대장은 붉은 색 이름으로 표시됩니다."
+        android:textColor="#FF5555"
+        android:textSize="12sp"/>
 
 </LinearLayout>

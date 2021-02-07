@@ -26,6 +26,10 @@
 
         <activity android:name=".AddActivity"
             android:screenOrientation="portrait"></activity>
+        <activity android:name=".MembersActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".MemberAddActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

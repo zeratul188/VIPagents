@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -46,6 +47,7 @@ public class AddActivity extends AppCompatActivity {
     private Button[] btnNamed = new Button[4];
     private Button btnAdd, btnRemove, btnSave, btnInput;
     private TextView[] txtNamed = new TextView[4];
+    private CheckBox chkCommander;
 
     private String[][] ironHorseTypes = {{"전방", "후방", "달콤한꿈+전방", "힐러"}, {"지휘통제실", "내부탱커", "A구역", "B구역", "C구역", "2층 딜러", "힐러"},
             {"3층 진단", "2층, 3층 + 경첩", "1층 초기화", "탱커", "힐러", "CC빌드(상태이상)", "ABC", "저격수 처리", "경첩 파괴", "잡몹 처리"}, {"모로조바탱", "키탱", "좌측 힐러", "우측 힐러", "좌측 전방 딜러", "우측 전방 딜러", "좌측 RPG 후방", "우측 RPG 후방", "잡몹 처리"}};
@@ -62,7 +64,7 @@ public class AddActivity extends AppCompatActivity {
 
     private ArrayList<String> ironHorseNames, darkNames;
 
-    private boolean isIronHorse = true, isFull = true;
+    private boolean isIronHorse = true, isFull = true, isCommander = false;
     private int position = 0, max = 8, cnt = 0;
 
     private AlertDialog alertDialog = null;
@@ -74,7 +76,7 @@ public class AddActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.addlayout);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle("역할 추가/수정");
+        setTitle("역할 저장/수정");
 
         edtName = findViewById(R.id.edtName);
         rgType = findViewById(R.id.rgType);
@@ -84,6 +86,7 @@ public class AddActivity extends AppCompatActivity {
         btnRemove = findViewById(R.id.btnRemove);
         btnSave = findViewById(R.id.btnSave);
         btnInput = findViewById(R.id.btnInput);
+        chkCommander = findViewById(R.id.chkCommander);
 
         for (int i = 0; i < btnNamed.length; i++) {
             int resources = getResources().getIdentifier("btnNamed"+(i+1), "id", getPackageName());
@@ -116,11 +119,54 @@ public class AddActivity extends AppCompatActivity {
                         txtNamed[i].setText("네임드"+(i+1)+" - "+darkBoss[i]);
                     }
                 }
+                isCommander = false;
+                chkCommander.setChecked(false);
+                for (int index = 0; index < 8; index++) {
+                    if (isIronHorse) mReference = mDatabase.getReference("IronHorse/Member"+(index+1));
+                    else mReference = mDatabase.getReference("Dark/Member"+(index+1));
+                    mReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for (DataSnapshot messageData : snapshot.getChildren()) {
+                                if (messageData.getKey().toString().equals("Commander") && Boolean.parseBoolean(messageData.getValue().toString())) {
+                                    isCommander = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
             }
         });
 
         for (int i = 0; i < txtNamed.length; i++) {
             txtNamed[i].setText(txtNamed[i].getText().toString()+ironHorseBoss[i]);
+        }
+
+        for (int index = 0; index < 8; index++) {
+            if (isIronHorse) mReference = mDatabase.getReference("IronHorse/Member"+(index+1));
+            else mReference = mDatabase.getReference("Dark/Member"+(index+1));
+            mReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot messageData : snapshot.getChildren()) {
+                        if (messageData.getKey().toString().equals("Commander") && Boolean.parseBoolean(messageData.getValue().toString())) {
+                            isCommander = true;
+                            break;
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
 
         for (int i = 0; i < btnNamed.length; i++) {
@@ -302,8 +348,15 @@ public class AddActivity extends AppCompatActivity {
                                 mReference = mDatabase.getReference("IronHorse/Member"+(i+1));
                                 Map<String, Object> taskMap = new HashMap<String, Object>();
                                 for (int index = 0; index < btnNamed.length; index++) taskMap.put("Named"+(index+1), btnNamed[index].getText().toString());
+                                if (chkCommander.isChecked()) {
+                                    if (isCommander) {
+                                        toast("이미 공대장이 존재합니다.", false);
+                                        return;
+                                    }
+                                    taskMap.put("Commander", "true");
+                                } else taskMap.put("Commander", "false");
                                 mReference.updateChildren(taskMap);
-                                Toast.makeText(AddActivity.this, "정보를 수정하였습니다.", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(AddActivity.this, "정보를 수정하였습니다.", Toast.LENGTH_SHORT).show();
                                 isHave = true;
                                 break;
                             }
@@ -312,6 +365,13 @@ public class AddActivity extends AppCompatActivity {
                                 mReference = mDatabase.getReference("Dark/Member"+(i+1));
                                 Map<String, Object> taskMap = new HashMap<String, Object>();
                                 for (int index = 0; index < btnNamed.length; index++) taskMap.put("Named"+(index+1), btnNamed[index].getText().toString());
+                                if (chkCommander.isChecked()) {
+                                    if (isCommander) {
+                                        toast("이미 공대장이 존재합니다.", false);
+                                        return;
+                                    }
+                                    taskMap.put("Commander", "true");
+                                } else taskMap.put("Commander", "false");
                                 mReference.updateChildren(taskMap);
                                 Toast.makeText(AddActivity.this, "정보를 수정하였습니다.", Toast.LENGTH_SHORT).show();
                                 isHave = true;
@@ -336,6 +396,13 @@ public class AddActivity extends AppCompatActivity {
                         Map<String, Object> taskMap = new HashMap<String, Object>();
                         taskMap.put("name", edtName.getText().toString());
                         for (int i = 0; i < btnNamed.length; i++) taskMap.put("Named"+(i+1), btnNamed[i].getText().toString());
+                        if (chkCommander.isChecked()) {
+                            if (isCommander) {
+                                toast("이미 공대장이 존재합니다.", false);
+                                return;
+                            }
+                            taskMap.put("Commander", "true");
+                        } else taskMap.put("Commander", "false");
                         mReference.updateChildren(taskMap);
                         Toast.makeText(AddActivity.this, "레이드 등록 하였습니다.", Toast.LENGTH_SHORT).show();
                     }
@@ -352,6 +419,7 @@ public class AddActivity extends AppCompatActivity {
                                 mReference = mDatabase.getReference("IronHorse/Member"+(i+1));
                                 Map<String, Object> taskMap = new HashMap<String, Object>();
                                 taskMap.put("name", "none");
+                                taskMap.put("Commander", "false");
                                 for (int t = 0; t < btnNamed.length; t++) taskMap.put("Named"+(t+1), "none");
                                 mReference.updateChildren(taskMap);
                                 Toast.makeText(AddActivity.this, "정보를 삭제하였습니다.", Toast.LENGTH_SHORT).show();
@@ -362,6 +430,7 @@ public class AddActivity extends AppCompatActivity {
                                 mReference = mDatabase.getReference("Dark/Member"+(i+1));
                                 Map<String, Object> taskMap = new HashMap<String, Object>();
                                 taskMap.put("name", "none");
+                                taskMap.put("Commander", "false");
                                 for (int t = 0; t < btnNamed.length; t++) taskMap.put("Named"+(t+1), "none");
                                 mReference.updateChildren(taskMap);
                                 Toast.makeText(AddActivity.this, "정보를 삭제하였습니다.", Toast.LENGTH_SHORT).show();
