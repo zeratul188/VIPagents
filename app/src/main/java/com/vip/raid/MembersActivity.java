@@ -169,6 +169,10 @@ public class MembersActivity extends AppCompatActivity {
 
                 return true;
             case R.id.action_btn2:
+                if (!isManagment) {
+                    Toast.makeText(getApplicationContext(), "추가할 권한이 없습니다.", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
                 Intent intent = new Intent(getApplicationContext(), MemberAddActivity.class);
                 startActivity(intent);
                 return true;
