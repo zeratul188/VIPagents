@@ -13,33 +13,31 @@
         android:id="@+id/rgType"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
         <RadioButton
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="40dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/radiocustom2"
             android:id="@+id/rdoIronHorse"
             android:text="철마"
-            android:textColor="#f0f0f0"
+            android:textColor="#Fe6E0E"
             android:textSize="17sp"
+            android:drawableLeft="@drawable/fm4custom"
             android:textAlignment="center"
-            android:background="@drawable/radiocustom"
             android:checked="true"
-            android:button="@null"
-            android:layout_marginRight="5dp"/>
+            android:button="@null"/>
         <RadioButton
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="40dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/radiocustom2"
             android:id="@+id/rdoDark"
             android:text="칠흑의 시간"
-            android:textColor="#f0f0f0"
+            android:textColor="#aaaaaa"
             android:textSize="17sp"
+            android:drawableLeft="@drawable/fm3custom"
             android:textAlignment="center"
-            android:background="@drawable/radiocustom"
             android:checked="false"
-            android:button="@null"
-            android:layout_marginRight="5dp"/>
+            android:button="@null"/>
     </RadioGroup>
     <LinearLayout
         android:layout_width="match_parent"
@@ -216,7 +214,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="right"
-        android:text="Version 1.4"
+        android:text="Version 1.5.1"
         android:textSize="10sp"
         android:textColor="#888888"
         android:layout_marginTop="2dp"/>

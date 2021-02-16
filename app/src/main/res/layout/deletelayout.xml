@@ -1,29 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:background="@drawable/litelayoutcustom"
+    android:background="@drawable/layoutdialogcustom"
     android:layout_height="match_parent" >
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="날짜 선택"
-        android:textColor="#555555"
-        android:textSize="20sp"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:orientation="vertical">
-        <DatePicker
-            android:id="@+id/datePicker"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:calendarViewShown="false"
-            android:layout_gravity="center"
-            android:calendarTextColor="#f0f0f0"
-            android:outlineSpotShadowColor="#f0f0f0"
-            android:datePickerMode="spinner" />
-    </LinearLayout>
+        android:layout_gravity="center"
+        android:id="@+id/txtContent"
+        android:text="[???]의 정보를 삭제하시겠습니까?"
+        android:textSize="15sp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:textColor="#FF4444"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,11 +28,11 @@
             android:layout_marginRight="10dp"
             android:textColor="#f0f0f0"/>
         <Button
-            android:id="@+id/btnChoice"
+            android:id="@+id/btnDelete"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:background="@drawable/buttonmaincustom"
-            android:text="선택"
+            android:text="삭제"
             android:textSize="18sp"
             android:textColor="#f0f0f0"/>
     </LinearLayout>

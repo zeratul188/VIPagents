@@ -39,7 +39,7 @@
                     android:text="중복 체크"
                     android:textSize="15sp"
                     android:textColor="#f0f0f0"
-                    android:background="@drawable/buttoncustom"
+                    android:background="@drawable/buttonmaincustom"
                     android:layout_marginLeft="5dp"/>
             </LinearLayout>
             <TextView
@@ -124,7 +124,7 @@
                     android:text="날짜 선택"
                     android:textSize="15sp"
                     android:textColor="#f0f0f0"
-                    android:background="@drawable/buttoncustom"
+                    android:background="@drawable/buttonmaincustom"
                     android:layout_marginLeft="5dp"/>
                 <Button
                     android:layout_width="60dp"
@@ -132,8 +132,8 @@
                     android:id="@+id/btnNow"
                     android:text="오늘"
                     android:textSize="15sp"
-                    android:textColor="#f0f0f0"
-                    android:background="@drawable/buttoncustom"
+                    android:textColor="#aaaaaa"
+                    android:background="@drawable/buttonsubcustom"
                     android:layout_marginLeft="5dp"/>
             </LinearLayout>
             <CheckBox
@@ -180,7 +180,7 @@
                         android:text="날짜 선택"
                         android:textSize="15sp"
                         android:textColor="#f0f0f0"
-                        android:background="@drawable/buttoncustom"
+                        android:background="@drawable/buttonmaincustom"
                         android:layout_marginLeft="5dp"/>
                 </LinearLayout>
                 <TextView

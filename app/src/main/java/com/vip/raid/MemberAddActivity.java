@@ -30,6 +30,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MemberAddActivity extends AppCompatActivity {
 
@@ -81,15 +83,58 @@ public class MemberAddActivity extends AppCompatActivity {
         isEdit = intent.getBooleanExtra("isEdit", false);
         name = intent.getStringExtra("Name");
 
+        mDatabase = FirebaseDatabase.getInstance();
+
         if (isEdit) {
             edtName.setText(name);
             edtName.setEnabled(false);
             btnDouble.setEnabled(false);
+            btnDouble.setTextColor(Color.parseColor("#FF4444"));
             isDouble = true;
             setTitle(name+"님의 정보");
+            btnAdd.setText("사용자 수정");
+
+            mReference = mDatabase.getReference("Users");
+            mReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot messageData : snapshot.getChildren()) {
+                        if (name.equals(messageData.child("name").getValue())) {
+                            if ((boolean)messageData.child("unconnect").getValue()) {
+                                chkUnconnect.setChecked(true);
+                                layoutUnconnect.setVisibility(View.VISIBLE);
+                            } else {
+                                chkUnconnect.setChecked(false);
+                                layoutUnconnect.setVisibility(View.GONE);
+                            }
+                            switch (messageData.child("grade").getValue().toString()) {
+                                case "수습 요원":
+                                    rdoGrade[0].setChecked(true);
+                                    break;
+                                case "요원":
+                                    rdoGrade[1].setChecked(true);
+                                    break;
+                                case "부관":
+                                    rdoGrade[2].setChecked(true);
+                                    break;
+                                case "지휘관":
+                                    rdoGrade[3].setChecked(true);
+                                    break;
+                            }
+                            txtDate.setText(messageData.child("date").getValue().toString());
+                            txtStartDate.setText(messageData.child("startdate").getValue().toString());
+                            edtLength.setText(messageData.child("date_length").getValue().toString());
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
 
-        mDatabase = FirebaseDatabase.getInstance();
         mReference = mDatabase.getReference("Users");
         mReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -169,6 +214,14 @@ public class MemberAddActivity extends AppCompatActivity {
 
                 final DatePicker datePicker = view.findViewById(R.id.datePicker);
                 final Button btnChoice = view.findViewById(R.id.btnChoice);
+                final Button btnCancel = view.findViewById(R.id.btnCancel);
+
+                btnCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        alertDialog.dismiss();
+                    }
+                });
 
                 btnChoice.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -263,10 +316,21 @@ public class MemberAddActivity extends AppCompatActivity {
                 if (chkUnconnect.isChecked()) isUnconnect = true;
                 else isUnconnect = false;
 
-                Member member = new Member(name, grade, date, startdate, date_length, isUnconnect);
-
                 mReference = mDatabase.getReference("Users");
-                mReference.child(name).setValue(member);
+                if (isEdit) {
+                    Map<String, Object> taskMap = new HashMap<String, Object>();
+                    taskMap.put("date", date);
+                    taskMap.put("date_length", date_length);
+                    taskMap.put("grade", grade);
+                    taskMap.put("name", name);
+                    taskMap.put("startdate", startdate);
+                    taskMap.put("unconnect", isUnconnect);
+                    mReference.child(name).updateChildren(taskMap);
+                } else {
+                    Member member = new Member(name, grade, date, startdate, date_length, isUnconnect);
+                    mReference.child(name).setValue(member);
+                }
+
                 finish();
             }
         });

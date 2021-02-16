@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         int day = calendar.get(calendar.DATE);
 
         txtTime.setText(year+"년 "+month+"월 "+day+"일");
+        txtCommander.setText("없음");
         mDatabase = FirebaseDatabase.getInstance();
 
         for (int index = 0; index < 8; index++) {
@@ -99,7 +101,10 @@ public class MainActivity extends AppCompatActivity {
                     boolean isFind = false;
                     for (DataSnapshot messageData : snapshot.getChildren()) {
                         if (messageData.getKey().toString().equals("Commander") && messageData.getValue().toString().equals("true")) isFind = true;
-                        else if (isFind && messageData.getKey().toString().equals("name")) txtCommander.setText(messageData.getValue().toString());
+                        else if (isFind && messageData.getKey().toString().equals("name")) {
+                            txtCommander.setText(messageData.getValue().toString());
+                            break;
+                        }
                     }
                 }
 
@@ -166,6 +171,8 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.rdoIronHorse) {
                     checkPeople("IronHorse");
+                    rdoIronHorse.setTextColor(Color.parseColor("#FE6E0E"));
+                    rdoDark.setTextColor(Color.parseColor("#AAAAAA"));
                     for (int i = 0; i < 4; i++) {
                         layoutNamed[i].removeAllViews();
                         /*TextView txtName = new TextView(getApplicationContext());
@@ -226,6 +233,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else {
                     checkPeople("Dark");
+                    rdoDark.setTextColor(Color.parseColor("#FE6E0E"));
+                    rdoIronHorse.setTextColor(Color.parseColor("#AAAAAA"));
                     for (int i = 0; i < 4; i++) {
                         layoutNamed[i].removeAllViews();
                         /*TextView txtName = new TextView(getApplicationContext());
@@ -285,6 +294,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
+                txtCommander.setText("없음");
                 for (int index = 0; index < 8; index++) {
                     if (checkedId == R.id.rdoIronHorse) mReference = mDatabase.getReference("IronHorse/Member"+(index+1));
                     else mReference = mDatabase.getReference("Dark/Member"+(index+1));
@@ -294,7 +304,10 @@ public class MainActivity extends AppCompatActivity {
                             boolean isFind = false;
                             for (DataSnapshot messageData : snapshot.getChildren()) {
                                 if (messageData.getKey().toString().equals("Commander") && messageData.getValue().toString().equals("true")) isFind = true;
-                                else if (isFind && messageData.getKey().toString().equals("name")) txtCommander.setText(messageData.getValue().toString());
+                                else if (isFind && messageData.getKey().toString().equals("name")) {
+                                    txtCommander.setText(messageData.getValue().toString());
+                                    break;
+                                }
                             }
                         }
 
@@ -323,6 +336,7 @@ public class MainActivity extends AppCompatActivity {
 
                 final EditText edtPassword = view.findViewById(R.id.edtPassword);
                 final Button btnProcess = view.findViewById(R.id.btnProcess);
+                final Button btnCancel = view.findViewById(R.id.btnCancel);
 
                 btnProcess.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -330,6 +344,7 @@ public class MainActivity extends AppCompatActivity {
                         if (edtPassword.getText().toString().equals("3287")) {
                             Map<String, Object> taskMap = new HashMap<String, Object>();
                             taskMap.put("name", "none");
+                            taskMap.put("Commander", "false");
                             for (int j = 0; j < 4; j++) taskMap.put("Named"+(j+1), "none");
                             for (int i = 0; i < 8; i++) {
                                 mReference = mDatabase.getReference("IronHorse/Member"+(i+1));
@@ -343,6 +358,13 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(getApplicationContext(), "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
                         }
+                    }
+                });
+
+                btnCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        alertDialog.dismiss();
                     }
                 });
 
@@ -360,6 +382,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         isNull = true;
+        txtCommander.setText("없음");
         for (int index = 0; index < 8; index++) {
             if (rdoIronHorse.isChecked()) mReference = mDatabase.getReference("IronHorse/Member"+(index+1));
             else mReference = mDatabase.getReference("Dark/Member"+(index+1));
@@ -371,7 +394,10 @@ public class MainActivity extends AppCompatActivity {
                         if (messageData.getKey().toString().equals("Commander") && messageData.getValue().toString().equals("true")) {
                             isFind = true;
                             isNull = false;
-                        } else if (isFind && messageData.getKey().toString().equals("name")) txtCommander.setText(messageData.getValue().toString());
+                        } else if (isFind && messageData.getKey().toString().equals("name")) {
+                            txtCommander.setText(messageData.getValue().toString());
+                            break;
+                        }
                     }
                 }
 
@@ -556,7 +582,26 @@ public class MainActivity extends AppCompatActivity {
 
                         final TextView tv = (TextView) view.findViewById(android.R.id.text1);
 
-                        for (int index = 0; index < 8; index++) {
+                        if (rdoIronHorse.isChecked()) mReference = mDatabase.getReference("IronHorse");
+                        else mReference = mDatabase.getReference("Dark");
+                        mReference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (int index = 0; index < 8; index++) {
+                                    if (snapshot.child("Member"+(index+1)).child("Commander").getValue().equals("true") && snapshot.child("Member"+(index+1)).child("name").getValue().equals(list.get(position))) {
+                                        tv.setTextColor(Color.parseColor("#FF4444"));
+                                        break;
+                                    } else tv.setTextColor(Color.WHITE);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+                        /*for (int index = 0; index < 8; index++) {
                             if (rdoIronHorse.isChecked()) mReference = mDatabase.getReference("IronHorse/Member"+(index+1));
                             else mReference = mDatabase.getReference("Dark/Member"+(index+1));
                             mReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -565,7 +610,7 @@ public class MainActivity extends AppCompatActivity {
                                     boolean isCommander = false;
                                     for (DataSnapshot messageData : snapshot.getChildren()) {
                                         if (messageData.getKey().toString().equals("Commander") && messageData.getValue().toString().equals("true")) isCommander = true;
-                                        else if (messageData.getKey().toString().equals("name") && messageData.getValue().toString().equals(list.get(position)) && isCommander) tv.setTextColor(Color.parseColor("#FF5555"));
+                                        if (messageData.getKey().toString().equals("name") && messageData.getValue().toString().equals(list.get(position)) && isCommander) tv.setText(tv.getText().toString()+" (공대장)");
                                     }
                                 }
 
@@ -574,7 +619,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 }
                             });
-                        }
+                        }*/
 
                         tv.setTextColor(Color.WHITE);
                         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
@@ -586,6 +631,38 @@ public class MainActivity extends AppCompatActivity {
                     }
                 };
                 listView.setAdapter(adapter);
+
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                        String location;
+                        String[] named = new String[4];
+                        if (rdoIronHorse.isChecked()) location = "IronHorse";
+                        else location = "Dark";
+                        mReference = mDatabase.getReference(location);
+                        mReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String str = "";
+                                for (DataSnapshot messageData : snapshot.getChildren()) {
+                                    if (list.get(position).equals(messageData.child("name").getValue())) {
+                                        str += messageData.child("name").getValue();
+                                        if (messageData.child("Commander").getValue().equals("true")) str += " (공대장)";
+                                        str += "\n-----------------------------------------";
+                                        for (int i = 1; i <= 4; i++) str += "\n네임드"+i+" : "+messageData.child("Named"+i).getValue();
+                                        break;
+                                    }
+                                }
+                                Toast.makeText(getApplicationContext(), str, Toast.LENGTH_LONG).show();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    }
+                });
 
                 builder = new AlertDialog.Builder(this);
                 builder.setView(view);

@@ -1,7 +1,11 @@
 package com.vip.raid;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -19,15 +23,21 @@ import java.util.ArrayList;
 public class MemberAdapter extends BaseAdapter {
     private Context context;
     private ArrayList<Member> itemList;
+    private Activity activity;
 
     private boolean isManagement = false;
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mReference;
 
-    public MemberAdapter(Context context, ArrayList<Member> itemList) {
+    private AlertDialog alertDialog = null;
+    private AlertDialog.Builder builder = null;
+    private View view;
+
+    public MemberAdapter(Context context, ArrayList<Member> itemList, Activity activity) {
         this.context = context;
         this.itemList = itemList;
+        this.activity = activity;
         mDatabase = FirebaseDatabase.getInstance();
     }
 
@@ -90,6 +100,7 @@ public class MemberAdapter extends BaseAdapter {
         }
 
         if (itemList.get(position).isUnconnect()) {
+            layoutUnconnect.setVisibility(View.VISIBLE);
             txtStartDate.setText(itemList.get(position).getStartdate());
             txtLength.setText(itemList.get(position).getDate_length()+"일");
         } else layoutUnconnect.setVisibility(View.GONE);
@@ -107,11 +118,39 @@ public class MemberAdapter extends BaseAdapter {
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mReference = mDatabase.getReference("Users");
-                mReference.child(itemList.get(position).getName()).removeValue();
-                Toast.makeText(context, itemList.get(position).getName()+"님의 정보가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
-                itemList.remove(position);
-                notifyDataSetChanged();
+                final View view = activity.getLayoutInflater().inflate(R.layout.deletelayout, null);
+
+                final TextView txtContent = view.findViewById(R.id.txtContent);
+                final Button btnDelete = view.findViewById(R.id.btnDelete);
+                final Button btnCancel = view.findViewById(R.id.btnCancel);
+
+                txtContent.setText(itemList.get(position).getName()+"님의 정보를 삭제하시겠습니까?");
+
+                btnDelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mReference = mDatabase.getReference("Users");
+                        mReference.child(itemList.get(position).getName()).removeValue();
+                        Toast.makeText(context, itemList.get(position).getName()+"님의 정보가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                        itemList.remove(position);
+                        notifyDataSetChanged();
+                        alertDialog.dismiss();
+                    }
+                });
+
+                btnCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        alertDialog.dismiss();
+                    }
+                });
+
+                builder = new AlertDialog.Builder(activity);
+                builder.setView(view);
+
+                alertDialog =builder.create();
+                alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                alertDialog.show();
             }
         });
 

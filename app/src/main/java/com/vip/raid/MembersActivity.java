@@ -106,7 +106,7 @@ public class MembersActivity extends AppCompatActivity {
                     members.add(member);
                 }
 
-                memberAdapter = new MemberAdapter(context, members);
+                memberAdapter = new MemberAdapter(context, members, MembersActivity.this);
                 memberAdapter.setManagement(isManagment);
                 if (members.size() != 0) listView.setAdapter(memberAdapter);
             }
@@ -131,6 +131,7 @@ public class MembersActivity extends AppCompatActivity {
                 final EditText edtPassword = view.findViewById(R.id.edtPassword);
                 final TextView txtInfo = view.findViewById(R.id.txtInfo);
                 final Button btnGet = view.findViewById(R.id.btnGet);
+                final Button btnCancel = view.findViewById(R.id.btnCancel);
 
                 if (isManagment) {
                     edtPassword.setVisibility(View.GONE);
@@ -138,6 +139,13 @@ public class MembersActivity extends AppCompatActivity {
                     txtInfo.setTextColor(Color.parseColor("#f0f0f0"));
                     btnGet.setText("권한 제거");
                 }
+
+                btnCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        alertDialog.dismiss();
+                    }
+                });
 
                 btnGet.setOnClickListener(new View.OnClickListener() {
                     @Override
