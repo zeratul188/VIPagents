@@ -5,9 +5,15 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
@@ -39,9 +45,13 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final int TYPE_WIFI = 1;
+    public static final int TYPE_MOBILE = 2;
+    public static final int TYPE_NOT_CONNECTED = 3;
+
     private RadioGroup rgType;
     private RadioButton rdoIronHorse, rdoDark;
-    private TextView txtTime, txtPeople, txtCommander;
+    private TextView txtTime, txtPeople, txtCommander, txtVersion, txtConnect;
     private LinearLayout[] layoutNamed = new LinearLayout[4];
     private TextView[] txtNamed = new TextView[4];
     private Button btnReset, btnAdd;
@@ -76,6 +86,22 @@ public class MainActivity extends AppCompatActivity {
         btnAdd = findViewById(R.id.btnAdd);
         txtPeople = findViewById(R.id.txtPeople);
         txtCommander = findViewById(R.id.txtCommander);
+        txtVersion = findViewById(R.id.txtVersion);
+        txtConnect = findViewById(R.id.txtConnect);
+
+        txtVersion.setText("Version "+getAppVersionName());
+
+        if (getConnectivityStatus(getApplicationContext()) == TYPE_MOBILE) {
+            txtConnect.setText("LTE 또는 3G");
+            txtConnect.setTextColor(Color.YELLOW);
+        } else if (getConnectivityStatus(getApplicationContext()) == TYPE_WIFI) {
+            txtConnect.setText("WI-FI");
+            txtConnect.setTextColor(Color.GREEN);
+        } else {
+            txtConnect.setText("연결되어 있지 않음");
+            txtConnect.setTextColor(Color.parseColor("#FF4444"));
+            Toast.makeText(getApplicationContext(), "인터넷이 연결되어 있지 않습니다. 연결 상태를 확인해주십시오.", Toast.LENGTH_SHORT).show();
+        }
 
         for (int i = 0; i < layoutNamed.length; i++) {
             int resources = getResources().getIdentifier("layoutNamed"+(i+1), "id", getPackageName());
@@ -92,6 +118,52 @@ public class MainActivity extends AppCompatActivity {
         txtTime.setText(year+"년 "+month+"월 "+day+"일");
         txtCommander.setText("없음");
         mDatabase = FirebaseDatabase.getInstance();
+
+        mReference = mDatabase.getReference();
+        mReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!getAppVersionName().equals(snapshot.child("Version").getValue())) {
+                    View view = getLayoutInflater().inflate(R.layout.deletelayout, null);
+
+                    TextView txtContent = view.findViewById(R.id.txtContent);
+                    Button btnCancel = view.findViewById(R.id.btnCancel);
+                    Button btnDelete = view.findViewById(R.id.btnDelete);
+
+                    txtContent.setText("현재 버전보다 상위 버전이 존재합니다. 업데이트가 필요합니다.\n"+"현재 버전 : "+getAppVersionName()+"\n최신 버전 : "+snapshot.child("Version").getValue());
+                    btnCancel.setText("종료");
+                    btnDelete.setText("다운로드");
+
+                    btnCancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            finish();
+                        }
+                    });
+
+                    btnDelete.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://discord.com/channels/743235040132988949/805931040786088006/811781268773142548"));
+                            startActivity(intent);
+                        }
+                    });
+
+                    builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setView(view);
+
+                    alertDialog =builder.create();
+                    alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    alertDialog.setCancelable(false);
+                    alertDialog.show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         for (int index = 0; index < 8; index++) {
             mReference = mDatabase.getReference("IronHorse/Member"+(index+1));
@@ -676,6 +748,10 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), MembersActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.action_btn5:
+                onResume();
+                Toast.makeText(getApplicationContext(), "새로 고침했습니다.", Toast.LENGTH_SHORT).show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -706,5 +782,34 @@ public class MainActivity extends AppCompatActivity {
             });
 
         }
+    }
+
+    public String getAppVersionName(){
+        PackageInfo packageInfo = null;         //패키지에 대한 전반적인 정보
+
+        //PackageInfo 초기화
+        try{
+            packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+        }catch (PackageManager.NameNotFoundException e){
+            e.printStackTrace();
+            return "";
+        }
+
+        return packageInfo.versionName;
+    }
+
+    public static int getConnectivityStatus(Context context){ //해당 context의 서비스를 사용하기위해서 context객체를 받는다.
+        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        if(networkInfo != null){
+            int type = networkInfo.getType();
+            if(type == ConnectivityManager.TYPE_MOBILE){//쓰리지나 LTE로 연결된것(모바일을 뜻한다.)
+                return TYPE_MOBILE;
+            }else if(type == ConnectivityManager.TYPE_WIFI){//와이파이 연결된것
+                return TYPE_WIFI;
+            }
+        }
+        return TYPE_NOT_CONNECTED;  //연결이 되지않은 상태
     }
 }

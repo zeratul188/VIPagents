@@ -210,12 +210,34 @@
             android:layout_marginLeft="5dp"
             android:textColor="#FFBD8D"/>
     </LinearLayout>
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="right"
-        android:text="Version 1.5.1"
-        android:textSize="10sp"
-        android:textColor="#888888"
-        android:layout_marginTop="2dp"/>
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="인터넷 연결 상태 : "
+            android:textSize="10sp"
+            android:textColor="#888888"
+            android:layout_marginTop="2dp"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtConnect"
+            android:text="/??/"
+            android:textSize="10sp"
+            android:textColor="#888888"
+            android:layout_marginTop="2dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:id="@+id/txtVersion"
+            android:text="Version ?"
+            android:textSize="10sp"
+            android:textColor="#888888"
+            android:layout_marginTop="2dp"/>
+    </LinearLayout>
 </LinearLayout>

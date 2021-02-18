@@ -1,6 +1,10 @@
 <menu  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/action_btn5"
+        android:title=""
+        android:icon="@drawable/ic_refresh_black_24dp"
+        app:showAsAction="always" />
     <item android:id="@+id/action_btn1"
         android:title=""
         android:icon="@drawable/ic_person_black_24dp"
