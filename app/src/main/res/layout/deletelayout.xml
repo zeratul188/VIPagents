@@ -10,6 +10,7 @@
         android:id="@+id/txtContent"
         android:text="[???]의 정보를 삭제하시겠습니까?"
         android:textSize="15sp"
+        android:textAlignment="center"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="20dp"
         android:textColor="#FF4444"/>

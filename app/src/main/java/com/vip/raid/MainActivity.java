@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int TYPE_MOBILE = 2;
     public static final int TYPE_NOT_CONNECTED = 3;
 
+    private BackPressedForFinish bpff;
+
     private RadioGroup rgType;
     private RadioButton rdoIronHorse, rdoDark;
     private TextView txtTime, txtPeople, txtCommander, txtVersion, txtConnect;
@@ -78,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        bpff = new BackPressedForFinish(this);
+
         rgType = findViewById(R.id.rgType);
         rdoIronHorse = findViewById(R.id.rdoIronHorse);
         rdoDark = findViewById(R.id.rdoDark);
@@ -98,9 +102,44 @@ public class MainActivity extends AppCompatActivity {
             txtConnect.setText("WI-FI");
             txtConnect.setTextColor(Color.GREEN);
         } else {
+            View view = getLayoutInflater().inflate(R.layout.deletelayout, null);
+
+            TextView txtContent = view.findViewById(R.id.txtContent);
+            Button btnCancel = view.findViewById(R.id.btnCancel);
+            Button btnDelete = view.findViewById(R.id.btnDelete);
+
+            txtContent.setText("네트워크가 연결되어 있지 않습니다.\n연결 상태를 확인해주십시오.");
+            btnCancel.setText("종료");
+            btnDelete.setText("연결 설정");
+
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+
+            btnDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String strSettingPagePackage = "com.android.settings";
+                    String strSettingPageName = "com.android.settings.wifi.WifiSettings";
+                    Intent intent = new Intent();
+                    intent.setClassName(strSettingPagePackage , strSettingPageName);
+                    startActivity(intent);
+                }
+            });
+
+            builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setView(view);
+
+            alertDialog =builder.create();
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            alertDialog.setCancelable(false);
+            alertDialog.show();
             txtConnect.setText("연결되어 있지 않음");
             txtConnect.setTextColor(Color.parseColor("#FF4444"));
-            Toast.makeText(getApplicationContext(), "인터넷이 연결되어 있지 않습니다. 연결 상태를 확인해주십시오.", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "인터넷이 연결되어 있지 않습니다. 연결 상태를 확인해주십시오.", Toast.LENGTH_SHORT).show();
         }
 
         for (int i = 0; i < layoutNamed.length; i++) {
@@ -661,7 +700,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 for (int index = 0; index < 8; index++) {
                                     if (snapshot.child("Member"+(index+1)).child("Commander").getValue().equals("true") && snapshot.child("Member"+(index+1)).child("name").getValue().equals(list.get(position))) {
-                                        tv.setTextColor(Color.parseColor("#FF4444"));
+                                        tv.setTextColor(Color.parseColor("#FE6E0E"));
                                         break;
                                     } else tv.setTextColor(Color.WHITE);
                                 }
@@ -811,5 +850,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return TYPE_NOT_CONNECTED;  //연결이 되지않은 상태
+    }
+
+    @Override
+    public void onBackPressed() {
+        bpff.onBackPressed();
     }
 }
